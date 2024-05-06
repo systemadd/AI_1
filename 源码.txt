@@ -1,0 +1,228 @@
+import random
+import urllib
+from time import sleep
+from urllib.parse import quote
+
+import  requests
+import json
+a="""
+                     ########                  #
+                     #################            #
+                  ######################         #
+                 #########################      #
+               ############################
+              ##############################
+              ###############################
+             ###############################
+             ##############################
+                             #    ########   #
+                ##        ###        ####   ##
+                                     ###   ###
+                                   ####   ###
+              ####          ##########   ####
+              #######################   ####
+                ####################   ####
+                 ##################  ####
+                   ############      ##
+                      ########        ###
+                     #########        #####
+                   ############      ######
+                  ########      #########
+                    #####       ########
+                      ###       #########
+                     ######    ############
+                    #######################
+                    #   #   ###  #   #   ##
+                    ########################
+                     ##     ##   ##     ##
+                     
+                     作者：systemadd QQ：2779764143
+声明：本工具只用来学习，请勿用于违法用途，否则后果自负。
+"""
+
+def cookie():
+    url='http://124.71.5.199/9090090.txt'
+    res=requests.get(url=url)
+    cookie_value = res.text.strip()
+    return str(cookie_value)
+
+def ua_head():
+    header = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'Content - Type': 'multipart/form-data;',
+        'Origin':'http://dgsx.hnqczy.com',
+        'X-Requested-With':'XMLHttpRequest',
+        'cookie':f'JSESSIONID={str(cookie())}',
+        'Referer':"http://dgsx.hnqczy.com/intern/diary!writeByType.action?type=week&num=1&reportId=467871&canFill=undefined&canModify=0&year="
+    }
+    return header
+def ua_login():
+    header={
+        "Host": "dgsx.hnqczy.com",
+        "Connection": "close",
+        "Content-Length": "71",
+        "Cache-Control": "max-age=0",
+        "Upgrade-Insecure-Requests": "1",
+        "Origin": "http://dgsx.hnqczy.com",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700143B) WindowsWechat(0x6309092b) XWEB/8555 Flue",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+        "Referer": "http://dgsx.hnqczy.com/intern/account!toAccount.action",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept-Language": "zh-CN,zh;q=0.9",
+        'cookie':f'JSESSIONID={str(cookie())}',
+    }
+    return header
+def proxy():
+
+    proxy={
+        'http':'http://10.0.4.41:8888',
+        'https':'https://10.0.4.41:8888'
+    }
+    return proxy
+def data(zhoubao_txt,xinde,i):
+    files = {
+
+        'type': (None, 'week'),
+        'num': (None, f'{i}'),
+        'year': (None, ''),
+        'reportId': (None, f''),
+        'content': (None, f'{zhoubao_txt}'),
+        'experience': (None, f'{xinde}'),
+        'delUpFile': (None, ''),
+    }
+    return files
+def ai_pgt(zhoubao):
+    url = "https://api.chatanywhere.tech/v1/chat/completions"
+
+    payload = json.dumps({
+        "model": "gpt-3.5-turbo",
+        "messages": [
+            {
+                "role": "user",
+                f"content": f"生成一个300字的周报嘛,从事{zhoubao}。不需要日期"
+            }
+        ]
+    })
+    headers = {
+        'Authorization': '',#替换自己的AIKEY
+        'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
+        'Content-Type': 'application/json'
+    }
+
+    response = requests.request("POST", url, headers=headers, data=payload)
+
+    a = response.json()
+    try:
+        print(a['error'])
+    except:
+        print("AI生成的周报："+'\n')
+        print("------------------")
+        print(str(a['choices'][0]['message']['content']).replace('[','').replace(']',''))
+    return str(a['choices'][0]['message']['content']).replace('[','').replace(']','')
+
+
+def ai_pgt2(zhoubao):
+    url = "https://api.chatanywhere.tech/v1/chat/completions"
+    sleep(30)
+    payload = json.dumps({
+        "model": "gpt-3.5-turbo",
+        "messages": [
+            {
+                "role": "user",
+                f"content": f"生成一个心得,从事{zhoubao},不需要日期。"
+            }
+        ]
+    })
+    headers = {
+        'Authorization': '',#替换自己的AIKEY
+        'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
+        'Content-Type': 'application/json'
+    }
+
+    response = requests.request("POST", url, headers=headers, data=payload)
+
+    # 将响应的内容转换为json格式
+    a = response.json()
+
+    # print(a)
+    try:
+        print(a['error']+'已被openapi风控停止生成，即将退出工具！')
+    except:
+        print("AI生成的心得："+'\n')
+        print("------------------")
+        print(str(a['choices'][0]['message']['content']).replace('[','').replace(']',''))
+        print("已经获取chatgpt3.5文案")
+        print("<------------------->")
+    return str(a['choices'][0]['message']['content']).replace('[','').replace(']','')
+
+def login():
+
+    login_url='http://dgsx.hnqczy.com/intern/account!toLogin.action'
+    LoginName=input("账号:"+'\n')
+    pwd=input("密码:"+'\n')
+    a=random.randint(1,10)
+    schoolid="1:13937"
+    data_login={
+        'schoolId':f"{schoolid}",
+        'LoginName':f'{LoginName}',
+        'pwd':f'{pwd}',
+        'accountFlag':'0'
+    }
+    res=requests.post(url=login_url,data=data_login,headers=ua_login())
+    print("正在登录程序运行正常！！")
+    if res.text.find("用户名或密码错误")>1:
+        return False
+    else:
+        print("登录成功")
+        return True
+
+def main():
+    url='http://dgsx.hnqczy.com/intern/diary!writeByType.action'
+    zhoubao=input("请输入您的职位：")
+    z=input("输入从第几周开始")
+
+    for i in range(int(z),39):
+
+        print(f'正在编写第{i}周')
+        try:
+            res=requests.post(url=url,headers=ua_head(),files=data(zhoubao_txt=ai_pgt(zhoubao),xinde=ai_pgt2(zhoubao),i=i))
+            if res.text.find("抱歉，出错了")>1:
+                print("cookie已过期，请联系systemadd更换，不需要删除程序！！！！")
+                print('--------------error--------------------')
+                input("输入任意键结束")
+                break
+            else:
+                print("已完成第" + str(i) + "周")
+                print(res.text)
+                sleep(60)
+                print("正常请求下一个")
+                print("")
+                print('\n')
+                if (i == 38):
+                    print("已完成所有周,程序退出。" + '\n')
+                    input("输入任意键结束")
+                    break
+        except:
+            print("openai风控提醒请过20分钟再请求！")
+            print("程序停止！")
+            input("输入任意键结束")
+            break
+
+
+
+if __name__ == '__main__':
+    print(a)
+    if(login()):
+        print("程序正常运行")
+        print("正在请求chatgpt"+'\n')
+        print("<------------------->")
+        main()
+    else:
+        print("密码账号错误，请重新运行。")
+        input("输入任意键结束")
+
+
+
+
+
